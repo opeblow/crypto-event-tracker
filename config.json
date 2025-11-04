@@ -1,0 +1,91 @@
+{
+  "project_name": "Crypto Event Tracker & Notifier",
+  "description": "MCP server that tracks cryptocurrency events from web search and extracts upcoming events with dates",
+  "version": "1.0.0",
+  "author": "Mobolaji Opeyemi Bolatito",
+  "repository": "https://github.com/opeblow/crypto-event-tracker.git",
+  
+  "search": {
+    "default_results_limit": 10,
+    "search_freshness": "pw",
+    "search_queries_examples": [
+      "cryptocurrency events",
+      "crypto conference 2025",
+      "blockchain summit",
+      "token launch announcement",
+      "crypto airdrop",
+      "mainnet launch",
+      "hard fork upgrade"
+    ]
+  },
+  
+  "event_parsing": {
+    "timezone": "UTC",
+    "supported_date_formats": [
+      "12/31/2024 or 12-31-2024",
+      "2024-12-31",
+      "January 15, 2025",
+      "15 January 2025",
+      "January 15"
+    ],
+    "date_extraction_patterns": [
+      "\\d{1,2}[/-]\\d{1,2}[/-]\\d{2,4}",
+      "\\d{4}[/-]\\d{1,2}[/-]\\d{1,2}",
+      "[A-Z][a-z]+ \\d{1,2},? \\d{4}",
+      "\\d{1,2} [A-Z][a-z]+ \\d{4}",
+      "[A-Z][a-z]+ \\d{1,2}"
+    ],
+    "supported_categories": [
+      "conference",
+      "launch",
+      "upgrade",
+      "airdrop",
+      "summit",
+      "announcement",
+      "other"
+    ]
+  },
+  
+  "supported_coins": [
+    "Bitcoin (BTC)",
+    "Ethereum (ETH)",
+    "Solana (SOL)",
+    "Cardano (ADA)",
+    "Ripple (XRP)",
+    "Polkadot (DOT)",
+    "Dogecoin (DOGE)",
+    "Avalanche (AVAX)",
+    "Polygon (MATIC)",
+    "Chainlink (LINK)",
+    "Litecoin (LTC)",
+    "Uniswap (UNI)",
+    "Cosmos (ATOM)",
+    "Tron (TRX)",
+    "Stellar (XLM)",
+    "Monero (XMR)",
+    "Algorand (ALGO)",
+    "Fantom (FTM)",
+    "NEAR Protocol",
+    "Aptos (APT)",
+    "Sui",
+    "Optimism",
+    "Arbitrum",
+    "Base",
+    "Binance Coin (BNB)",
+    "Tether (USDT)",
+    "USDC",
+    "And many more..."
+  ],
+  
+  "logging": {
+    "level": "INFO",
+    "log_file": "crypto_events.log"
+  },
+  
+  "future_features": {
+    "google_calendar_integration": "Add events to Google Calendar automatically",
+    "gmail_notifications": "Send email notifications for new events",
+    "scheduled_monitoring": "Auto-run searches daily/weekly",
+    "custom_alerts": "Set alerts for specific coins or event types"
+  }
+}
