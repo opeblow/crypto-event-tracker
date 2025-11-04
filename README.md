@@ -40,7 +40,7 @@ crypto-event-tracker/
 
 1. *Clone the repository*
 bash
-git clone https://github.com/yourusername/crypto-event-tracker.git
+git clone https://github.com/opeblow/crypto-event-tracker.git
 cd crypto-event-tracker
 
 
@@ -106,7 +106,7 @@ json
       "title": "Bitcoin Conference 2025",
       "date": "2025-05-15T00:00:00",
       "location": "Miami",
-      "description": "Annual Bitcoin conference...",
+      "description": "Annual Bitcoin conference...",s
       "category": "conference",
       "source": "https://..."
     }
