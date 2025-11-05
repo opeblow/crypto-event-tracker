@@ -1,31 +1,35 @@
 import asyncio
-from fastmcp import FastMCP
-from tools import CryptoSearchTool, SearchConfig
 import json
+from fastmcp import FastMCP
 
-# Initializing FastMCP server
+# Try importing tools safely
+try:
+    from tools import CryptoSearchTool, SearchConfig
+    print("[INFO] Successfully imported tools ")
+except Exception as e:
+    print(f"ERROR: Failed to import tools: {e}")
+    raise
+
+# Initialize FastMCP server
+print("INFO:Initializing FastMCP server...")
 mcp = FastMCP("crypto-event-tracker")
 
-# Initializing search tool
-search_config = SearchConfig()
-search_tool = CryptoSearchTool(search_config)
+# Initialize search tool with safety
+try:
+    search_config = SearchConfig()
+    search_tool = CryptoSearchTool(search_config)
+    print("INFO: Search tool initialized successfully ")
+except Exception as e:
+    print(f"ERROR:Failed to initialize search tool: {e}")
+    raise
 
 @mcp.tool()
 async def search_crypto_events(query: str, count: int = 10) -> str:
-    """
-    Search for cryptocurrency events worldwide. Returns upcoming events with dates and general crypto news.
-    
-    Args:
-        query: Search query for crypto events (e.g., 'Bitcoin conference', 'Ethereum upgrade', 'crypto airdrop')
-        count: Number of results to return (default: 10)
-    """
-    # Performing search
+    """Search for cryptocurrency events worldwide."""
+    print(f"DEBUG: search_crypto_events called with query='{query}', count={count}")
     results = await search_tool.search(query, count)
-    
-    # Parse events
     parsed_response = search_tool.parse_events(results, query)
-    
-    # Formating the  response
+
     response = {
         "query": query,
         "total_results": parsed_response.total_results,
@@ -52,28 +56,17 @@ async def search_crypto_events(query: str, count: int = 10) -> str:
             for event in parsed_response.events_without_dates
         ]
     }
-    
+
     return json.dumps(response, indent=2)
 
 @mcp.tool()
 async def search_specific_coin(coin_name: str, count: int = 10) -> str:
-    """
-    Search for events related to a specific cryptocurrency.
-    
-    Args:
-        coin_name: Name of the cryptocurrency (e.g., 'Bitcoin', 'Ethereum', 'Solana')
-        count: Number of results to return (default: 10)
-    """
-    # Create query for specific coin
+    """Search for events related to a specific cryptocurrency."""
+    print(f"DEBUG:search_specific_coin called with coin='{coin_name}', count={count}")
     query = f"{coin_name} cryptocurrency events upcoming"
-    
-    # Performing the search
     results = await search_tool.search(query, count)
-    
-    # Parse events
     parsed_response = search_tool.parse_events(results, query)
-    
-    # Formating response
+
     response = {
         "coin": coin_name,
         "total_results": parsed_response.total_results,
@@ -100,9 +93,12 @@ async def search_specific_coin(coin_name: str, count: int = 10) -> str:
             for event in parsed_response.events_without_dates
         ]
     }
-    
+
     return json.dumps(response, indent=2)
 
 if __name__ == "__main__":
-    
-    mcp.run(transport="stdio")
+    print("INFO: Starting MCP server on stdio...")
+    try:
+        mcp.run(transport="stdio")
+    except Exception as e:
+        print(f"ERROR: MCP server crashed: {e}")

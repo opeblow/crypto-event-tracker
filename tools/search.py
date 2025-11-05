@@ -44,7 +44,7 @@ class CryptoEvent(BaseModel):
     event_date:Optional[datetime]=None
     location:Optional[str]=None
     description:str
-    source_url=HttpUrl
+    source_url:HttpUrl
     category:EventCategory=EventCategory.OTHER
     has_specific_date:bool=False
 

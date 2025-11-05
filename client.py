@@ -4,6 +4,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from openai import OpenAI
 import os
+import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -41,28 +42,6 @@ class CryptoEventAgent:
         self.conversation_history = [
             {"role": "system", "content": SYSTEM_PROMPT}
         ]
-    
-    async def connect_to_server(self):
-        """Connecting to the MCP server"""
-        server_params = StdioServerParameters(
-            command="python",
-            args=["server.py"],
-            env=None
-        )
-        
-        stdio_transport = await stdio_client(server_params)
-        self.stdio, self.write = stdio_transport
-        self.session = ClientSession(self.stdio, self.write)
-        
-        await self.session.initialize()
-        
-        # Listing available tools
-        tools_list = await self.session.list_tools()
-        self.tools = tools_list.tools
-        print(f"\n Connected to MCP server")
-        print(f"Available tools: {[tool.name for tool in self.tools]}\n")
-        
-        return self.tools
     
     def format_tools_for_openai(self):
         """Converting MCP tools to OpenAI function format"""
@@ -166,51 +145,56 @@ class CryptoEventAgent:
     
     async def close(self):
         """Closing the session"""
-        if self.session:
+        if hasattr(self,'session')and self.session:
             await self.session.close()
 
 async def main():
     """Running the agent"""
     agent = CryptoEventAgent()
+    server_parameters=StdioServerParameters(
+        command="python",
+        args=["server.py"],
+        env=None
+    )
     
     try:
-        # Connecting to MCP server
-        await agent.connect_to_server()
-        
-        print(" Crypto Event Tracker Agent Started!")
-        print(" Ask me about any cryptocurrency events")
-        print(" Examples:")
-        print("   - 'What Bitcoin events are coming up?'")
-        print("   - 'Search for Ethereum conferences'")
-        print("   - 'Any Solana airdrops happening?'")
-        print("   - 'Show me all crypto events this month'")
-        print("\n Type 'exit', 'quit', or 'bye' to stop\n")
-        print("=" * 60 + "\n")
-        
-        # Interactive loop
-        while True:
-            user_input = input("You: ").strip()
-            
-            if user_input.lower() in ["exit", "quit", "bye"]:
-                print("\n Goodbye! Stay updated with crypto events!")
-                break
-            
-            if not user_input:
-                continue
-            
-            print() 
-            
-            # Processing message
-            response = await agent.chat(user_input)
-            print(f"Agent: {response}\n")
-            print("=" * 60 + "\n")
-    
-    except KeyboardInterrupt:
-        print("\n\n Interrupted. Shutting down...")
-    except Exception as e:
-        print(f"\n Error: {e}")
-    finally:
-        await agent.close()
+        # Connecting to MCP server using context manager
+        async with stdio_client(server_parameters)as (read_stream,write_stream):
+            agent.session=ClientSession(read_stream,write_stream)
+            await agent.session.initialize()
 
-if __name__ == "__main__":
+            tools_list=await agent.session.list_tools()
+            agent.tools=tools_list.tools
+
+            print(f"\nConnected to MCP SERVER.")
+            print(f"\nAvailable tools:{[tool.name for tool in agent.tools]}\n")
+            print("Crypto Event Tracker Agent Started")
+            print("Ask me about any cryptocurrency events")
+            print("Examples:")
+            print("What Bitcoin events are coming up?")
+            print("Search for ethereum conferences")
+            print("Any Solana airdrops happening?")
+            print("Show me all crypto events this month")
+            print("\n Type 'exit' , 'quit',or 'bye' to stop\n")
+            print("="*60 + "\n")
+
+            while True:
+                user_input=input("You:").strip()
+                if user_input.lower() in ["exit","quit","bye"]:
+                    print("\n Goodbye!stay updated with crypto events!")
+                    break
+                if not user_input:
+                    continue
+                print()
+
+                response=await agent.chat(user_input)
+                print(f"Agent:{response}\n")
+                print("="*60 +"\n")
+    except KeyboardInterrupt:
+        print("\n\n Interrupted.Shutting down...")
+    except Exception as e:
+        print(f"\n Errr:{e}")
+        traceback.print_exc()
+
+if __name__=="__main__":
     asyncio.run(main())
