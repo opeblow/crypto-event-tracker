@@ -36,7 +36,7 @@ Be proactive, helpful, and enthusiastic about crypto events. If results show "Un
 """
 
 class CryptoEventAgent:
-    def _init_(self):
+    def __init__(self):
         self.session = None
         self.tools = []
         self.conversation_history = [
@@ -154,7 +154,8 @@ async def main():
     server_parameters=StdioServerParameters(
         command="python",
         args=["server.py"],
-        env=None
+        env=os.environ,
+        capture_output=False
     )
     
     try:
@@ -163,12 +164,13 @@ async def main():
         async with stdio_client(server_parameters)as (read_stream,write_stream):
             print("Creating Session")
             agent.session=ClientSession(read_stream,write_stream)
+            print("Waiting for MCP server to initialize")
             await agent.session.initialize()
+            print("MCP server initialized!Connected to server")
 
             tools_list=await agent.session.list_tools()
             agent.tools=tools_list.tools
 
-            print(f"\nConnected to MCP SERVER.")
             print(f"\nAvailable tools:{[tool.name for tool in agent.tools]}\n")
             print("Crypto Event Tracker Agent Started")
             print("Ask me about any cryptocurrency events")
@@ -181,7 +183,7 @@ async def main():
             print("="*60 + "\n")
 
             while True:
-                user_input=input("You:").strip()
+                user_input=await asyncio.to_thread(input,"You:")
                 if user_input.lower() in ["exit","quit","bye"]:
                     print("\n Goodbye!stay updated with crypto events!")
                     break

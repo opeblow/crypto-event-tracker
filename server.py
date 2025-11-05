@@ -2,6 +2,7 @@ import asyncio
 import json
 from fastmcp import FastMCP
 
+
 # Try importing tools safely
 try:
     from tools import CryptoSearchTool, SearchConfig
@@ -10,6 +11,8 @@ except Exception as e:
     print(f"ERROR: Failed to import tools: {e}")
     raise
 
+
+    
 # Initialize FastMCP server
 print("INFO:Initializing FastMCP server...")
 mcp = FastMCP("crypto-event-tracker")
@@ -62,7 +65,7 @@ async def search_crypto_events(query: str, count: int = 10) -> str:
 @mcp.tool()
 async def search_specific_coin(coin_name: str, count: int = 10) -> str:
     """Search for events related to a specific cryptocurrency."""
-    print(f"DEBUG:search_specific_coin called with coin='{coin_name}', count={count}")
+    print(f"sDEBUG:search_specific_coin called with coin='{coin_name}', count={count}")
     query = f"{coin_name} cryptocurrency events upcoming"
     results = await search_tool.search(query, count)
     parsed_response = search_tool.parse_events(results, query)
@@ -96,9 +99,11 @@ async def search_specific_coin(coin_name: str, count: int = 10) -> str:
 
     return json.dumps(response, indent=2)
 
-if __name__ == "__main__":
-    print("INFO: Starting MCP server on stdio...")
+
+if __name__=="__main__":
+    print("INFO:Starting MCP server on stdio")
     try:
         mcp.run(transport="stdio")
-    except Exception as e:
-        print(f"ERROR: MCP server crashed: {e}")
+    
+    except Exception as e :
+        print(f"ERROR:MCP server crashed:{e}")
