@@ -159,7 +159,9 @@ async def main():
     
     try:
         # Connecting to MCP server using context manager
+        print("Starting stdio_client")
         async with stdio_client(server_parameters)as (read_stream,write_stream):
+            print("Creating Session")
             agent.session=ClientSession(read_stream,write_stream)
             await agent.session.initialize()
 

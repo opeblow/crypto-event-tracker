@@ -64,7 +64,7 @@ class SearchResponse(BaseModel):
 class CryptoSearchTool:
     def __init__(self,config:SearchConfig):
         self.config=config
-        self.client=httpx.AsyncClient
+        self.client=httpx.AsyncClient()
 
         self.crypto_keywords=[
             "bitcoin","btc","ethereum","eth","solana","sol","cardano","ada",
@@ -205,5 +205,5 @@ class CryptoSearchTool:
             query=query
         )
     async def close(self):
-        self.client.close()
+        await self.client.aclose()
                 
