@@ -4,6 +4,7 @@ from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from openai import OpenAI
 import os
+import platform
 import traceback
 from dotenv import load_dotenv
 
@@ -201,4 +202,6 @@ async def main():
         traceback.print_exc()
 
 if __name__=="__main__":
+    if platform.system()=="windows":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(main())

@@ -2,6 +2,8 @@ import asyncio
 import json
 from fastmcp import FastMCP
 import sys
+import platform
+
 
 
 # Try importing tools safely
@@ -101,10 +103,15 @@ async def search_specific_coin(coin_name: str, count: int = 10) -> str:
     return json.dumps(response, indent=2)
 
 
+
 if __name__=="__main__":
+    if platform.system()=="windows":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     print("INFO:Starting MCP server on stdio",file=sys.stderr)
+
     try:
         mcp.run(transport="stdio")
-    
-    except Exception as e :
-        print(f"ERROR:MCP server crashed:{e}",file=sys.stderr)
+
+    except Exception as e:
+        print(f"ERROR:MCP server crashed {e}",file=sys.stderr)
+        raise

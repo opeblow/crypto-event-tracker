@@ -1,6 +1,7 @@
 import asyncio
 from mcp import ClientSession,StdioServerParameters
 from mcp.client.stdio import stdio_client
+import platform
 
 async def main():
     server_params=StdioServerParameters(
@@ -32,4 +33,7 @@ async def main():
         print("\n ALL TESTS PASSED!")
 
 if __name__=="__main__":
+    if platform.system()=="windows":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
     asyncio.run(main())
+  
