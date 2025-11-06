@@ -99,7 +99,7 @@ class CryptoSearchTool:
         if self.config.newness.value:
             params["newness"]=self.config.newness.value
 
-        response=self.client.get(
+        response=await self.client.get(
             self.config.base_url,
             headers=headers,
             params=params

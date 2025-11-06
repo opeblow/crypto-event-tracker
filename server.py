@@ -1,29 +1,30 @@
 import asyncio
 import json
 from fastmcp import FastMCP
+import sys
 
 
 # Try importing tools safely
 try:
     from tools import CryptoSearchTool, SearchConfig
-    print("[INFO] Successfully imported tools ")
+    print("[INFO] Successfully imported tools ",file=sys.stderr)
 except Exception as e:
-    print(f"ERROR: Failed to import tools: {e}")
+    print(f"ERROR: Failed to import tools: {e}",file=sys.stderr)
     raise
 
 
     
 # Initialize FastMCP server
-print("INFO:Initializing FastMCP server...")
+print("INFO:Initializing FastMCP server...",file=sys.stderr)
 mcp = FastMCP("crypto-event-tracker")
 
 # Initialize search tool with safety
 try:
     search_config = SearchConfig()
     search_tool = CryptoSearchTool(search_config)
-    print("INFO: Search tool initialized successfully ")
+    print("INFO: Search tool initialized successfully ",file=sys.stderr)
 except Exception as e:
-    print(f"ERROR:Failed to initialize search tool: {e}")
+    print(f"ERROR:Failed to initialize search tool: {e}",file=sys.stderr)
     raise
 
 @mcp.tool()
@@ -101,9 +102,9 @@ async def search_specific_coin(coin_name: str, count: int = 10) -> str:
 
 
 if __name__=="__main__":
-    print("INFO:Starting MCP server on stdio")
+    print("INFO:Starting MCP server on stdio",file=sys.stderr)
     try:
         mcp.run(transport="stdio")
     
     except Exception as e :
-        print(f"ERROR:MCP server crashed:{e}")
+        print(f"ERROR:MCP server crashed:{e}",file=sys.stderr)
