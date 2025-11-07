@@ -5,7 +5,9 @@ from mcp.client.stdio import stdio_client
 from openai import OpenAI
 import os
 import platform
+import mcp
 import traceback
+from fastmcp import Client
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -152,23 +154,20 @@ class CryptoEventAgent:
 async def main():
     """Running the agent"""
     agent = CryptoEventAgent()
-    server_parameters=StdioServerParameters(
-        command="python",
-        args=["server.py"],
-        env=os.environ,
-        capture_output=False
-    )
+    server_url="http://127.0.0.1:5000/mcp"
+    mcp_client=Client(server_url)
+    
     
     try:
         # Connecting to MCP server using context manager
-        print("Starting stdio_client")
-        async with stdio_client(server_parameters)as (read_stream,write_stream):
-            print("Creating Session")
-            agent.session=ClientSession(read_stream,write_stream)
-            print("Waiting for MCP server to initialize")
-            await agent.session.initialize()
-            print("MCP server initialized!Connected to server")
+        print(f"Connecting to MCP server at {server_url}")
+        async with mcp_client:
 
+    
+            agent.session=mcp_client.session
+            print("Initializing (15s timeout)")
+            await asyncio.wait_for(agent.session.initialize(),timeout=15.0)
+            print("Connected")
             tools_list=await agent.session.list_tools()
             agent.tools=tools_list.tools
 
@@ -195,6 +194,10 @@ async def main():
                 response=await agent.chat(user_input)
                 print(f"Agent:{response}\n")
                 print("="*60 +"\n")
+
+    except asyncio.TimeoutError:
+        print("\n Connection timeout!")
+        print("Server may have issues")
     except KeyboardInterrupt:
         print("\n\n Interrupted.Shutting down...")
     except Exception as e:
